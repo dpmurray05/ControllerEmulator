@@ -12,6 +12,7 @@ from config.config import Config
 from infrastructure.cursor_manager import CursorManager
 
 
+
 class GamepadController:
     """Main controller for gamepad emulation and input processing."""
     
@@ -189,11 +190,14 @@ class GamepadController:
             # Always update gamepad to maintain connection
             self._gamepad.update()
     
-    # Precomputed unit vectors for each 30° segment
-    _SEG_30 = math.cos(math.radians(30))   # ≈ 0.866
-    _SEG_60 = math.cos(math.radians(60))   # = 0.500
+    
 
     def _process_left_joystick(self):
+
+        # Precomputed unit vectors for each 30° segment
+        _SEG_30 = math.cos(math.radians(30))   # ≈ 0.866
+        _SEG_60 = math.cos(math.radians(60))   # = 0.500
+
         """
         Process left joystick for BG3's 12-way radial Action Wheel.
 
@@ -206,6 +210,7 @@ class GamepadController:
         Two-key combos (w+e, s+c, w+q, s+z) snap to the 1:00/5:00/7:00/11:00 positions.
         Conflicting opposites (w+s, a+d) cancel to neutral.
         """
+        lx, ly = 0.0, 0.0
 
         key = self.l_joystick_keys
 
@@ -217,9 +222,7 @@ class GamepadController:
         e = key.get('e', False)
         z = key.get('z', False)
         c = key.get('c', False)
-
-        lx, ly = 0.0, 0.0
-
+        
         # --- Cardinals (single keys, 0/90/180/270°) ---
         if w and not s:  ly += 1.0
         if s and not w:  ly -= 1.0
@@ -278,6 +281,7 @@ class GamepadController:
         """Process button states."""
         for key, button in Config.KEY_MAPPINGS.items():
             current_state = self.keys.get(key, False)
+            print(f"[DEBUG] {key}: {current_state}")
             if current_state:
                 self._gamepad.press_button(button=button)
             else:
