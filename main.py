@@ -72,6 +72,7 @@ def processing_loop(controller):
     except KeyboardInterrupt:
         print("\nShutting down...")
     except Exception as e:
+        traceback.print_exc()
         print(f"[ERROR] Processing error: {e}")
 
 

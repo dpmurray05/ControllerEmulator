@@ -256,13 +256,13 @@ class GamepadController:
             if self.r_joystick_keys.get(key, False):
                 any_key = True
                 if key == 'right':
-                    lx += 1.0
+                    rx += 1.0
                 elif key == 'left':
-                    lx -= 1.0
+                    rx -= 1.0
                 elif key == 'up':
-                    ly += 1.0
+                    ry += 1.0
                 elif key == 'down':
-                    ly -= 1.0
+                    ry -= 1.0
         
         # Normalize diagonal movement
         if lx != 0 and ly != 0:
@@ -281,7 +281,6 @@ class GamepadController:
         """Process button states."""
         for key, button in Config.KEY_MAPPINGS.items():
             current_state = self.keys.get(key, False)
-            print(f"[DEBUG] {key}: {current_state}")
             if current_state:
                 self._gamepad.press_button(button=button)
             else:
