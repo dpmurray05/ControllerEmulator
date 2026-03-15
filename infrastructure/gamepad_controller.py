@@ -31,7 +31,9 @@ class GamepadController:
         
         # Input state
         self.keys = {k: False for k in Config.KEY_MAPPINGS.keys()}
-        self.joystick_keys = {k: False for k in Config.JOYSTICK_KEYS}
+        self.l_joystick_keys = {k: False for k in Config.L_JOYSTICK_KEYS}
+        self.r_joystick_keys = {k: False for k in Config.R_JOYSTICK_KEYS}
+
         
         # Gamepad state
         self.last_lx = 0.0
@@ -130,8 +132,10 @@ class GamepadController:
             self._reset_gamepad()
             
             # Clear all key states
-            for key in self.joystick_keys:
-                self.joystick_keys[key] = False
+            for key in self.l_joystick_keys:
+                self.l_joystick_keys[key] = False
+            for key in self.r_joystick_keys:
+                self.r_joystick_keys[key] = False
             for key in self.keys:
                 self.keys[key] = False
             
@@ -185,21 +189,76 @@ class GamepadController:
             # Always update gamepad to maintain connection
             self._gamepad.update()
     
+    # Precomputed unit vectors for each 30° segment
+    _SEG_30 = math.cos(math.radians(30))   # ≈ 0.866
+    _SEG_60 = math.cos(math.radians(60))   # = 0.500
+
     def _process_left_joystick(self):
-        """Process WASD movement for left joystick."""
+        """
+        Process left joystick for BG3's 12-way radial Action Wheel.
+
+        Key layout and segment angles (clock positions):
+        q   w   e       q=10:00  w=12:00  e= 2:00
+        a       d       a= 9:00           d= 3:00
+        z   s   c       z= 8:00  s= 6:00  c= 4:00
+                            
+        Single keys snap to 0°/90°/180°/270° and the 2:00/4:00/8:00/10:00 positions.
+        Two-key combos (w+e, s+c, w+q, s+z) snap to the 1:00/5:00/7:00/11:00 positions.
+        Conflicting opposites (w+s, a+d) cancel to neutral.
+        """
+
+        key = self.l_joystick_keys
+
+        w = key.get('w', False)
+        a = key.get('a', False)
+        s = key.get('s', False)
+        d = key.get('d', False)
+        q = key.get('q', False)
+        e = key.get('e', False)
+        z = key.get('z', False)
+        c = key.get('c', False)
+
         lx, ly = 0.0, 0.0
+
+        # --- Cardinals (single keys, 0/90/180/270°) ---
+        if w and not s:  ly += 1.0
+        if s and not w:  ly -= 1.0
+        if d and not a:  lx += 1.0
+        if a and not d:  lx -= 1.0
+
+        # --- Off-axis singles: 2:00 (30°), 4:00 (330°), 8:00 (210°), 10:00 (150°) ---
+        # These override cardinals when pressed — they are their own dedicated segment keys.
+        if e and not (w or s or a or d):  lx =  _SEG_30; ly =  _SEG_60   #  2:00  30° off right
+        if c and not (w or s or a or d):  lx =  _SEG_30; ly = -_SEG_60   #  4:00  30° off right
+        if z and not (w or s or a or d):  lx = -_SEG_30; ly = -_SEG_60   #  8:00  30° off left
+        if q and not (w or s or a or d):  lx = -_SEG_30; ly =  _SEG_60   # 10:00  30° off left
+
+        # --- Two-key combos: 1:00 (60°), 5:00 (300°), 7:00 (240°), 11:00 (120°) ---
+        if w and e:  lx =  _SEG_60; ly =  _SEG_30   #  1:00
+        if s and c:  lx =  _SEG_60; ly = -_SEG_30   #  5:00
+        if s and z:  lx = -_SEG_60; ly = -_SEG_30   #  7:00
+        if w and q:  lx = -_SEG_60; ly =  _SEG_30   # 11:00
+        
+        self._gamepad.left_joystick_float(x_value_float=lx, y_value_float=ly)
+        self.last_lx, self.last_ly = lx, ly
+    
+    def _process_right_joystick(self):
+        """Process  for right joystick."""
+        
+        rx, ry = 0.0, 0.0
+        
         any_key = False
         
-        for key in Config.JOYSTICK_KEYS:
-            if self.joystick_keys.get(key, False):
+        for key in Config.R_JOYSTICK_KEYS:
+            if self.r_joystick_keys.get(key, False):
                 any_key = True
-                if key == 'd':
+                if key == 'right':
                     lx += 1.0
-                elif key == 'a':
+                elif key == 'left':
                     lx -= 1.0
-                elif key == 'w':
+                elif key == 'up':
                     ly += 1.0
-                elif key == 's':
+                elif key == 'down':
                     ly -= 1.0
         
         # Normalize diagonal movement
@@ -211,34 +270,6 @@ class GamepadController:
         # Reset if no keys pressed
         if not any_key:
             lx, ly = 0.0, 0.0
-        
-        self._gamepad.left_joystick_float(x_value_float=lx, y_value_float=ly)
-        self.last_lx, self.last_ly = lx, ly
-    
-    def _process_right_joystick(self):
-        """Process mouse movement for right joystick."""
-        dx, dy = self._get_mouse_movement()
-        
-        # Apply recoil control when firing
-        if Config.RECOIL_CONTROL_ENABLED and self.l2_held:
-            dy += Config.RECOIL_COMPENSATION
-        
-        # Apply sensitivity
-        sens_multiplier = Config.ADS_SENS_MULTIPLIER if self.r2_held else 1.0
-        rx = dx * Config.SENS_X * sens_multiplier * Config.DPI_SCALING
-        ry = -dy * Config.SENS_Y * sens_multiplier * Config.DPI_SCALING  # Invert Y
-        
-        # Apply deadzone
-        rx = rx if abs(rx) > Config.DEADZONE else 0.0
-        ry = ry if abs(ry) > Config.DEADZONE else 0.0
-        
-        # Apply smoothing
-        rx = self.last_rx * Config.SMOOTHING + rx * (1.0 - Config.SMOOTHING)
-        ry = self.last_ry * Config.SMOOTHING + ry * (1.0 - Config.SMOOTHING)
-        
-        # Clamp to valid range
-        rx = max(-1.0, min(1.0, rx))
-        ry = max(-1.0, min(1.0, ry))
         
         self._gamepad.right_joystick_float(x_value_float=rx, y_value_float=ry)
         self.last_rx, self.last_ry = rx, ry
@@ -263,13 +294,6 @@ class GamepadController:
             self._gamepad.left_trigger_float(1.0)
         else:
             self._gamepad.left_trigger_float(0.0)
-    
-    def _get_mouse_movement(self) -> tuple:
-        """Get and reset mouse movement deltas."""
-        dx, dy = self.mouse_dx, self.mouse_dy
-        self.mouse_dx = 0.0
-        self.mouse_dy = 0.0
-        return dx, dy
     
     def update_rate(self, new_rate: int):
         """Update the processing rate."""

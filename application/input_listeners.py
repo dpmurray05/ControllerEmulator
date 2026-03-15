@@ -7,9 +7,8 @@ from pynput import keyboard, mouse
 class ConditionalSuppressMouseListener(mouse.Listener):
     """Mouse listener with conditional event suppression."""
     
-    def __init__(self, on_move=None, on_click=None, on_scroll=None):
+    def __init__(self, on_click=None, on_scroll=None):
         super().__init__(
-            on_move=on_move,
             on_click=on_click,
             on_scroll=on_scroll,
             suppress=False

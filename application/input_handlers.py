@@ -28,8 +28,11 @@ class InputHandler:
                 return
             
             # Handle joystick keys
-            if key_str in Config.JOYSTICK_KEYS:
-                self.controller.joystick_keys[key_str] = True
+            if key_str in Config.L_JOYSTICK_KEYS:
+                self.controller.L_joystick_keys[key_str] = True
+
+            if key_str in Config.R_JOYSTICK_KEYS:
+                self.controller.R_joystick_keys[key_str] = True
             
             # Handle mapped keys
             elif key_str in Config.KEY_MAPPINGS:
@@ -44,8 +47,11 @@ class InputHandler:
             key_str = self._parse_key(key)
             
             # Handle joystick keys
-            if key_str in Config.JOYSTICK_KEYS:
-                self.controller.joystick_keys[key_str] = False
+            if key_str in Config.L_JOYSTICK_KEYS:
+                self.controller.l_joystick_keys[key_str] = False
+
+            if key_str in Config.R_JOYSTICK_KEYS:
+                self.controller.r_joystick_keys[key_str] = False
             
             # Handle mapped keys
             elif key_str in Config.KEY_MAPPINGS:
@@ -54,21 +60,6 @@ class InputHandler:
         except Exception as e:
             print(f"[ERROR] Key release error: {e}")
     
-    def on_mouse_move(self, x, y):
-        """Handle mouse movement events."""
-        if not self.controller.active:
-            return
-        
-        # Calculate movement delta
-        dx = x - self.controller.cursor_manager.center_x
-        dy = y - self.controller.cursor_manager.center_y
-        
-        # Accumulate movement
-        self.controller.mouse_dx += dx
-        self.controller.mouse_dy += dy
-        
-        # Keep cursor centered
-        self.controller.cursor_manager.lock_to_center()
     
     def on_mouse_click(self, x, y, button, pressed):
         """Handle mouse click events."""

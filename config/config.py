@@ -28,23 +28,24 @@ class Config:
     # Key mappings (Xbox controller button values)
     KEY_MAPPINGS = {
         'space': vg.XUSB_BUTTON.XUSB_GAMEPAD_A,
-        'c': vg.XUSB_BUTTON.XUSB_GAMEPAD_B,
-        'r': vg.XUSB_BUTTON.XUSB_GAMEPAD_X,
-        '1': vg.XUSB_BUTTON.XUSB_GAMEPAD_Y,
-        '2': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP,
-        'alt_l': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN,
-        'b': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_LEFT,
-        '3': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT,
-        'q': vg.XUSB_BUTTON.XUSB_GAMEPAD_LEFT_SHOULDER,
-        'e': vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_SHOULDER,
+        'b': vg.XUSB_BUTTON.XUSB_GAMEPAD_B,
+        'x': vg.XUSB_BUTTON.XUSB_GAMEPAD_X,
+        'f': vg.XUSB_BUTTON.XUSB_GAMEPAD_Y,
+        '1': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP,
+        '3': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN,
+        '4': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_LEFT,
+        '2': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT,
+        'tab': vg.XUSB_BUTTON.XUSB_GAMEPAD_LEFT_SHOULDER,
+        'r': vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_SHOULDER,
         'esc': vg.XUSB_BUTTON.XUSB_GAMEPAD_START,
-        'tab': vg.XUSB_BUTTON.XUSB_GAMEPAD_BACK,
+        '`': vg.XUSB_BUTTON.XUSB_GAMEPAD_BACK,
         'shift': vg.XUSB_BUTTON.XUSB_GAMEPAD_LEFT_THUMB,
-        'f': vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_THUMB,
+        'alt_l': vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_THUMB,
     }
     
-    JOYSTICK_KEYS = ['w', 'a', 's', 'd']
-    TOGGLE_KEY = 't'
+    L_JOYSTICK_KEYS = ['w', 'a', 's', 'd', 'q', 'e', 'z', 'c']
+    R_JOYSTICK_KEYS = ['up', 'left', 'down', 'right']
+    TOGGLE_KEY = '*'
     
     @classmethod
     def reset_to_defaults(cls):
@@ -52,20 +53,20 @@ class Config:
         cls.UPDATE_RATE_HZ = 120
         cls.ADS_SENS_MULTIPLIER = 0.9
         cls.RECOIL_COMPENSATION = 1.8
-        cls.TOGGLE_KEY = 't'
+        cls.TOGGLE_KEY = '*'
         cls.KEY_MAPPINGS = {
             'space': vg.XUSB_BUTTON.XUSB_GAMEPAD_A,
-            'c': vg.XUSB_BUTTON.XUSB_GAMEPAD_B,
-            'r': vg.XUSB_BUTTON.XUSB_GAMEPAD_X,
-            '1': vg.XUSB_BUTTON.XUSB_GAMEPAD_Y,
-            '2': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP,
-            'alt_l': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN,
-            'b': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_LEFT,
-            '3': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT,
-            'q': vg.XUSB_BUTTON.XUSB_GAMEPAD_LEFT_SHOULDER,
-            'e': vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_SHOULDER,
+            'b': vg.XUSB_BUTTON.XUSB_GAMEPAD_B,
+            'x': vg.XUSB_BUTTON.XUSB_GAMEPAD_X,
+            'f': vg.XUSB_BUTTON.XUSB_GAMEPAD_Y,
+            '1': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP,
+            '3': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN,
+            '4': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_LEFT,
+            '2': vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT,
+            'tab': vg.XUSB_BUTTON.XUSB_GAMEPAD_LEFT_SHOULDER,
+            'r': vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_SHOULDER,
             'esc': vg.XUSB_BUTTON.XUSB_GAMEPAD_START,
-            'tab': vg.XUSB_BUTTON.XUSB_GAMEPAD_BACK,
+            '`': vg.XUSB_BUTTON.XUSB_GAMEPAD_BACK,
             'shift': vg.XUSB_BUTTON.XUSB_GAMEPAD_LEFT_THUMB,
-            'f': vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_THUMB,
+            'alt_l': vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_THUMB,
         }
