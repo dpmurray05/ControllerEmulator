@@ -34,7 +34,6 @@ def main():
     )
     
     mouse_listener = ConditionalSuppressMouseListener(
-        on_move=input_handler.on_mouse_move,
         on_click=input_handler.on_mouse_click
     )
     
